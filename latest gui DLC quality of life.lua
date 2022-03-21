@@ -16,6 +16,7 @@ if has_value(list, game.Players.LocalPlayer.UserId) and "https://api.roblox.com/
 	local Player = game:GetService("Players").LocalPlayer
     local Character = Player.Character
     local UIS = game:GetService("UserInputService")
+	local RunService = game:GetService("RunService")
 	local whitelist = {}
 	local Mouse = game.Players.LocalPlayer:GetMouse()
 	local whitelist_mode = ""
@@ -27,6 +28,8 @@ if has_value(list, game.Players.LocalPlayer.UserId) and "https://api.roblox.com/
 	local onstop = nil
 	local count = 0
 	local mode = 2
+	local swinging = true
+	local animationTrack, animationTrack2
 	--funct
 	function antidebuff()
 		if game:GetService("ReplicatedStorage").PlayerData[game.Players.LocalPlayer.Name].CombatValues.Buffs["Honor Bound"].Value ~= 0 then
@@ -415,11 +418,6 @@ if has_value(list, game.Players.LocalPlayer.UserId) and "https://api.roblox.com/
 		end
 	})
 
-	local Page3_gathering = Page3.Toggle({
-		Text = "Start gathering",
-		Enabled = false
-	})
-
 	Page3.Button({
 		Text = "TPbypass",
 		Callback = function()
@@ -450,6 +448,22 @@ if has_value(list, game.Players.LocalPlayer.UserId) and "https://api.roblox.com/
 					[2] = true
 				}
 				game:GetService("Workspace").Remotes.Doors.ToggleGateEvent:FireServer(A_1)
+			end
+		end
+	})
+
+	Page3.Button({
+		Text = "Invis",
+		Callback = function()
+			if game:GetService("ReplicatedStorage").PlayerData[game.Players.LocalPlayer.Name].Zone:FindFirstChild("PlayerLocation") then
+				UI.Banner({
+					Text = "Must bypass TP first"
+				})
+			else
+				local Character = Player.Character
+				local Clone = Character.LowerTorso.Root:Clone()
+				Character.LowerTorso.Root:Destroy()
+				Clone.Parent = Character.LowerTorso
 			end
 		end
 	})
@@ -510,7 +524,7 @@ if has_value(list, game.Players.LocalPlayer.UserId) and "https://api.roblox.com/
 		Enabled = false
 	})
 
-	local Page4_delay_text = Page5.TextField({
+	local Page5_delay_text = Page5.TextField({
 		Text = "Delay after click",
 		Type = "Number"
 	})
@@ -518,6 +532,22 @@ if has_value(list, game.Players.LocalPlayer.UserId) and "https://api.roblox.com/
 	local pickup = Page5.Toggle({
 		Text = "Auto Pickup Loot",
 		Enabled = false
+	})
+
+	local autofarm = Page5.Toggle({
+		Text = "Autofarm", 
+		Callback = function(value)
+			if value then
+				local humanoid = Player.Character:FindFirstChild("Humanoid")
+				animationTrack = humanoid:LoadAnimation(game:GetService("ReplicatedStorage").ReplicatedAnimations.Katana.BlockAnim)
+				animationTrack2 = humanoid:LoadAnimation(game:GetService("ReplicatedStorage").ReplicatedAnimations.Kama.CenterAttackAnim)
+			end
+		end,
+		Enabled = false
+	})
+
+	local Page5_faction = Page5.TextField({
+		Text = "Faction's Name"
 	})
 
 	local Page6 = UI.New({
@@ -604,12 +634,11 @@ if has_value(list, game.Players.LocalPlayer.UserId) and "https://api.roblox.com/
 	-- event
 
 	-- loop	
-
 	UIS.InputBegan:Connect(function(input, gameProcessedEvent)
 		if (input.UserInputType == Enum.UserInputType.MouseButton1) then
 			if botfarm:GetState() then
-				if Page4_delay_text:GetText() then
-					wait(Page4_delay_text:GetText())
+				if Page5_delay_text:GetText() then
+					wait(Page5_delay_text:GetText())
 					for i,v in pairs(game.Workspace.Mobs:GetChildren()) do
 						if v.PrimaryPart and Player.Character and Player.Character.PrimaryPart then
 							if Player:DistanceFromCharacter(v.PrimaryPart.Position) < 30 then
@@ -654,6 +683,24 @@ if has_value(list, game.Players.LocalPlayer.UserId) and "https://api.roblox.com/
 		end
 	end)
 
+	coroutine.wrap(function()
+		while true do 
+			if autofarm:GetState() then
+				animationTrack2:Play(1)
+				wait(0.5)
+				for i,v in pairs(game.Workspace.Mobs:GetChildren()) do
+					if v.PrimaryPart and Player.Character and Player.Character.PrimaryPart then
+						if Player:DistanceFromCharacter(v.PrimaryPart.Position) < 30 then
+							game:GetService("Workspace").Remotes.Global.ProcessHitEvent:FireServer(v)
+						end
+					end
+				end
+				--wait(1)
+			end
+		wait()
+		end
+   end)()
+
 	while true do
 		if game.Players.LocalPlayer.Character then
 			if game.Players.LocalPlayer.Character.Name ~= nameplr then
@@ -665,6 +712,30 @@ if has_value(list, game.Players.LocalPlayer.UserId) and "https://api.roblox.com/
 						v.Position = Vector3.new(999,999,999)
 					end
 				end
+			end
+			if autofarm:GetState() then
+				local PlayerPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+				local Closest = nil
+				for i,v in pairs(workspace.Mobs:GetChildren()) do
+					if v:FindFirstChild("Info") and v.PrimaryPart then
+						if v.Info:FindFirstChild("Faction") then
+							if v.Info.Faction.Value == Page5_faction:GetText() then 
+								if Closest == nil then
+									Closest = v
+								else
+									if (PlayerPosition - v.PrimaryPart.Position).magnitude < (Closest.PrimaryPart.Position - PlayerPosition).magnitude then
+										Closest = v
+									end
+								end
+							end	
+						end
+					end
+				end
+				if Closest then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Closest.PrimaryPart.CFrame + Vector3.new(0,1,1)
+				end
+				game.Players.LocalPlayer.Character:findFirstChildOfClass("Humanoid"):ChangeState(11)
+				animationTrack:Play()
 			end
 		end
 		if not workspace:FindFirstChild(game.Players.LocalPlayer.Name) then
@@ -713,15 +784,6 @@ if has_value(list, game.Players.LocalPlayer.UserId) and "https://api.roblox.com/
 				workspace:FindFirstChild(game.Players.LocalPlayer.Name).HumanoidRootPart.Range.Range_Mesh.Scale = Vector3.new(range*2,range*2,range*2)
 			end)
 		end
-		if Page3_gathering:GetState() then
-			for i,v in pairs(game:GetService("Workspace").Resources.Gatherables:GetChildren()) do
-				pcall(function()
-					if v.ClassName == "Model" then
-							game:GetService("Workspace").Remotes.Gathering.ManageResourceEvent:FireServer(v)
-					end
-				end)
-			end
-		end
 		if Page4_cooking:GetState() then
 			if game:GetService("ReplicatedStorage").PlayerData[game.Players.LocalPlayer.Name].Inventory.Items:FindFirstChild(Page4_food_cook_text:GetText()) then
 				game:GetService("Workspace").Remotes.Cooking.CookItemEvent:FireServer(Page4_food_cook_text:GetText())
@@ -760,7 +822,7 @@ if has_value(list, game.Players.LocalPlayer.UserId) and "https://api.roblox.com/
 						v.Character.Humanoid.BreakJointsOnDeath = false
 					else
 						local part = v.Character.PrimaryPart
-						part.Size = Vector3.new(1,1,1)
+						part.Size = Vector3.new(2,2,1)
 						part.Transparency = 1
 						part.CanCollide = true
 					end
