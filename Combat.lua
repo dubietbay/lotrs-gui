@@ -700,16 +700,22 @@ then
 				local target = game:GetService("Workspace"):FindFirstChild(targetname):FindFirstChild("HumanoidRootPart")
 				if Args[2] == "7 Monme Round" and game:GetService("ReplicatedStorage").PlayerData[name].CombatValues.InHand.Value == "Hazamatutu" then
 					local origin = game:GetService("Workspace")[name].HazamatutuBody.Base.Target
-					local aimat = solve(origin, target, 15.5, vel)
+					local aimat = solve(origin, target, 16.2, vel)
 					local A_1 = (aimat - origin.Position).Unit
 					local A_2 = "7 Monme Round"
 					game:GetService("Workspace")[name].Hazamatutu.MouseEvent:FireServer(A_1, A_2,"None","a")
 					return
 				elseif string.find(Args[2], "Arrow") and game:GetService("ReplicatedStorage").PlayerData[name].CombatValues.InHand.Value == "Sanbonhigo Daikyu" then
 					local origin = game:GetService("Workspace")[name]["Sanbonhigo DaikyuBody"].Hold.Target
-					local aimat = solve(origin, target, 15, vel)
+					local aimat = solve(origin, target, 15.7, vel)
 					local A_1 = (aimat - origin.Position).Unit
 					game:GetService("Workspace")[name]["Sanbonhigo Daikyu"].MouseEvent:FireServer(A_1, Args[2],Args[3],"a")
+					return
+				elseif string.find(Args[2], "Arrow") and game:GetService("ReplicatedStorage").PlayerData[name].CombatValues.InHand.Value == "Sanbonhigo Hankyu" then
+					local origin = game:GetService("Workspace")[name]["Sanbonhigo HankyuBody"].Hold.Target
+					local aimat = solve(origin, target, 16, vel)
+					local A_1 = (aimat - origin.Position).Unit
+					game:GetService("Workspace")[name]["Sanbonhigo Hankyu"].MouseEvent:FireServer(A_1, Args[2],Args[3],"a")
 					return
 				end
 			else return end
