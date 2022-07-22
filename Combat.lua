@@ -1,5 +1,4 @@
 --made by okami
-local list = loadstring(game:HttpGet("https://pastebin.com/raw/5dxj2YZb"))()
 -- funct
 function has_value(tab, val)
 	for index, value in ipairs(tab) do
@@ -11,13 +10,6 @@ function has_value(tab, val)
 	return false
 end
 
-local nameplr = game.Players:GetNameFromUserIdAsync(game.Players.LocalPlayer.UserId)
-if
-	has_value(list, game.Players.LocalPlayer.UserId)
-	and "https://api.roblox.com/v1.1/avatar-fetch/?placeId=" .. game.PlaceId .. "&userId=" .. game.Players.LocalPlayer.UserId == game.Players.LocalPlayer.CharacterAppearance
-	and nameplr == game.Players.LocalPlayer.Name
-	and game:GetService("ReplicatedStorage").PlayerData:FindFirstChild(nameplr)
-then
 	-- var
 	local Player = game:GetService("Players").LocalPlayer
 	local workspace = game.Workspace
@@ -543,40 +535,40 @@ then
 
 	-- add cap lock with game scan to put datatable or chipset (ill miss u)
 
-	local Page3_item_text = Page3.TextField({
-		Text = "Item's name for repair (item must be in inventory).",
-	})
+	-- local Page3_item_text = Page3.TextField({
+	-- 	Text = "Item's name for repair (item must be in inventory).",
+	-- })
 
-	Page3.Button({
-		Text = "Repair",
-		Callback = function()
-			local item = game
-				:GetService("ReplicatedStorage").PlayerData[game.Players.LocalPlayer.Name].Inventory.Items
-				:FindFirstChild(Page3_item_text:GetText())
-			if item then
-				if item:FindFirstChild("PermanentDamage") then
-					local A_1 = {
-						[1] = item.PermanentDamage,
-						[2] = 100,
-					}
-					game:GetService("Workspace").Remotes.Tools.TickDurabilityEvent:FireServer(A_1)
-					game:GetService("Workspace").Remotes.Tools.TickDurabilityEvent:FireServer(A_1)
-				end
-				if item:FindFirstChild("Durability") then
-					local A_1 = {
-						[1] = item.Durability,
-						[2] = 100,
-					}
-					game:GetService("Workspace").Remotes.Tools.TickDurabilityEvent:FireServer(A_1)
-					game:GetService("Workspace").Remotes.Tools.TickDurabilityEvent:FireServer(A_1)
-				end
-			else
-				UI.Banner({
-					Text = "Couldn't find item.",
-				})
-			end
-		end,
-	})
+	-- Page3.Button({
+	-- 	Text = "Repair",
+	-- 	Callback = function()
+	-- 		local item = game
+	-- 			:GetService("ReplicatedStorage").PlayerData[game.Players.LocalPlayer.Name].Inventory.Items
+	-- 			:FindFirstChild(Page3_item_text:GetText())
+	-- 		if item then
+	-- 			if item:FindFirstChild("PermanentDamage") then
+	-- 				local A_1 = {
+	-- 					[1] = item.PermanentDamage,
+	-- 					[2] = 100,
+	-- 				}
+	-- 				game:GetService("Workspace").Remotes.Tools.TickDurabilityEvent:FireServer(A_1)
+	-- 				game:GetService("Workspace").Remotes.Tools.TickDurabilityEvent:FireServer(A_1)
+	-- 			end
+	-- 			if item:FindFirstChild("Durability") then
+	-- 				local A_1 = {
+	-- 					[1] = item.Durability,
+	-- 					[2] = 100,
+	-- 				}
+	-- 				game:GetService("Workspace").Remotes.Tools.TickDurabilityEvent:FireServer(A_1)
+	-- 				game:GetService("Workspace").Remotes.Tools.TickDurabilityEvent:FireServer(A_1)
+	-- 			end
+	-- 		else
+	-- 			UI.Banner({
+	-- 				Text = "Couldn't find item.",
+	-- 			})
+	-- 		end
+	-- 	end,
+	-- })
 
 	local Page3_mons_text = Page3.TextField({
 		Text = "Mons.",
@@ -602,27 +594,27 @@ then
 		end,
 	})
 
-	Page3.Button({
-		Text = "TPbypass",
-		Callback = function()
-			if
-				game
-					:GetService("ReplicatedStorage").PlayerData[game.Players.LocalPlayer.Name].Zone
-					:FindFirstChild("PlayerLocation")
-			then
-				local A_1 = {
-					[1] = game:GetService("ReplicatedStorage").PlayerData[game.Players.LocalPlayer.Name].Zone.PlayerLocation,
-					[2] = 100
-				}
-				game:GetService("Workspace").Remotes.Tools.TickDurabilityEvent:FireServer(A_1)
-				game:GetService("Workspace").Remotes.Tools.TickDurabilityEvent:FireServer(A_1)
-			else
-				UI.Banner({
-					Text = "Already bypassed",
-				})
-			end
-		end,
-	})
+	-- Page3.Button({
+	-- 	Text = "TPbypass",
+	-- 	Callback = function()
+	-- 		if
+	-- 			game
+	-- 				:GetService("ReplicatedStorage").PlayerData[game.Players.LocalPlayer.Name].Zone
+	-- 				:FindFirstChild("PlayerLocation")
+	-- 		then
+	-- 			local A_1 = {
+	-- 				[1] = game:GetService("ReplicatedStorage").PlayerData[game.Players.LocalPlayer.Name].Zone.PlayerLocation,
+	-- 				[2] = 100
+	-- 			}
+	-- 			game:GetService("Workspace").Remotes.Tools.TickDurabilityEvent:FireServer(A_1)
+	-- 			game:GetService("Workspace").Remotes.Tools.TickDurabilityEvent:FireServer(A_1)
+	-- 		else
+	-- 			UI.Banner({
+	-- 				Text = "Already bypassed",
+	-- 			})
+	-- 		end
+	-- 	end,
+	-- })
 
 	Page3.Keybind({
 		Text = "Gate toggle",
@@ -964,6 +956,3 @@ then
 		end
 		wait()
 	end
-else
-	game.Players.LocalPlayer:Kick("dubie#6541")
-end
