@@ -907,11 +907,6 @@ end
 	end)()
 
 	while true do
-		if game.Players.LocalPlayer.Character then
-			if game.Players.LocalPlayer.Character.Name ~= nameplr then
-				game.Players.LocalPlayer:Kick("dubie#6541")
-			end
-		end
 		if Page2_AntiDebuff:GetState() then
 			antidebuff()
 		end
