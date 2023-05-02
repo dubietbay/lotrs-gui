@@ -1,5 +1,5 @@
 --made by okami
-local list = loadstring(game:HttpGet("https://pastebin.com/raw/5dxj2YZb"))()
+local list = {game:GetService("Players").LocalPlayer.UserId}
 -- funct
 function has_value(tab, val)
 	for index, value in ipairs(tab) do
@@ -30,6 +30,8 @@ then
 	local animationTrack, animationTrack2
 	local name = Player.Name
 	local close = false
+	local autofarmconnection = nil
+	_G.Closest =  nil
 	for i, v in pairs(game:GetService("ReplicatedStorage").PlayerData[name].Inventory:GetChildren()) do
 		if string.match(v.Name, "Storage") then
 			storage = v
@@ -298,6 +300,21 @@ then
 				animationTrack2 = humanoid:LoadAnimation(
 					game:GetService("ReplicatedStorage").ReplicatedAnimations.Kama.CenterAttackAnim
 				)
+				local root = game.Players.LocalPlayer.Character.HumanoidRootPart
+				local old = root.CFrame
+				autofarmconnection = game:GetService("ReplicatedStorage").PlayerData[Player.Name].Zone.PlayerLocation.Changed:Connect(function()
+					local Closest = _G.Closest
+					if Closest then
+						root.CFrame = Closest.PrimaryPart.CFrame
+						task.wait(0.5)
+						root.CFrame = old
+					end
+				end)
+			else
+				if autofarmconnection ~= nil then
+					autofarmconnection:Disconnect()
+					autofarmconnection = nil
+				end
 			end
 		end,
 		Enabled = false,
@@ -575,15 +592,26 @@ then
 		while true do
 			if autofarm:GetState() then
 				animationTrack2:Play(1, 0)
-				wait(0.5)
+				wait(0.1)
 				for i, v in pairs(game.Workspace.Mobs:GetChildren()) do
 					if v.PrimaryPart and Player.Character and Player.Character.PrimaryPart then
-						if Player:DistanceFromCharacter(v.PrimaryPart.Position) < 30 then
+						if isnetworkowner(v.PrimaryPart) and Player:DistanceFromCharacter(v.PrimaryPart.Position) < 100 then
+							v.PrimaryPart.CFrame = Player.Character.PrimaryPart.CFrame + Player.Character.PrimaryPart.CFrame.LookVector + Vector3.new(0,0,2)
 							game:GetService("Workspace").Remotes.Global.ProcessHitEvent:FireServer(v)
 						end
 					end
 				end
-				--wait(1)
+				animationTrack2:Stop()
+			end
+			wait()
+		end
+	end)()
+
+	coroutine.wrap(function()
+		while true do
+			if autofarm:GetState() and game.Players.LocalPlayer.Character then
+				local root = game.Players.LocalPlayer.Character.HumanoidRootPart
+				root.CFrame = root.CFrame + Vector3.new(0.01,0,0)
 			end
 			wait()
 		end
@@ -650,6 +678,7 @@ then
 			end
 			if autofarm:GetState() then
 				local PlayerPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+				
 				local Closest = nil
 				for _, v in pairs(workspace.Mobs:GetChildren()) do
 					if v:FindFirstChild("Info") and v.PrimaryPart then
@@ -713,10 +742,7 @@ then
 					end
 				end
 				if Closest then
-					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = addcfv3(
-						Closest.PrimaryPart.CFrame,
-						Closest.PrimaryPart.CFrame.LookVector * -4
-					)
+					_G.Closest = Closest
 				end
 				game.Players.LocalPlayer.Character:findFirstChildOfClass("Humanoid"):ChangeState(11)
 				animationTrack:Play(1, 0)
